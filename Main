@@ -1,0 +1,209 @@
+#include<vector>
+#include<iostream>
+#include<sstream>
+#include<string>
+#include <ctime>
+
+using namespace std;
+class HashTable
+{
+
+	string * newArray = NULL;//pointer to a the first element of a new dynamic array
+	int arraySize = 0;// initial array size varaible
+public:
+	HashTable(int myArraySize, int *myNewArray = nullptr)// constructor for my hastable
+	{
+		arraySize = myArraySize;// assinging the array size varible to the input value
+		newArray = new string[arraySize];// dynamically allocating an array
+	}
+
+	int stringHash(string inputstring, int TablelSize)//,// creating the hashed string input
+	{
+		int stringIntValue = 0;// initializing the string length value
+		int stringLength = inputstring.length();// determining the size of the input string
+	
+		
+		int StringTotalValue = 0;
+
+		for (int x = stringLength - 1; x>0; x--)
+		{
+
+			stringIntValue = inputstring[x];//converst the character into an integer
+			//StringToASCII[x] = stringIntValue;
+			StringTotalValue = StringTotalValue + pow(stringIntValue * 27, x);// takes the integer value of the current character, multiplies it by 27 to the power of x  
+			cout << "The total value of the string is " << StringTotalValue << endl;;// outputs the total string printed to console
+
+		}
+
+
+		return  abs((StringTotalValue % TablelSize));// return the remainder of the total string value divided by the size of the table
+
+	}
+
+	void fillTable(int inputsDone)// fillTable method uses the number of inputs done for tracking purposes
+
+	{
+		int tableSize = arraySize;// varaible for the size of the array
+		int highestElement = tableSize - 1;//the largest element of the array would be the size of the array minus 1
+		cout << tableSize;// prints the table size
+		int elementNumber = 0;// creates the elementNumber variable
+		string inputString;// creates the inputs varaible
+
+
+
+		cout << "What value do you want to add to the hashtable? " << endl;// console print command asking for input
+		cin >> inputString;// assings the input of the console print to the input string
+		elementNumber = stringHash(inputString, tableSize);// method call to hash the input string
+
+		while (newArray[elementNumber] != ("") && (inputsDone<tableSize) && newArray[elementNumber]!= "DeletedElement")// cycles through filled array elements to find an empty element when there's a colision
+		{
+			cout << "There has been a colision at element " << elementNumber << " With value" << newArray[elementNumber] << endl;// console print that indicates a collision
+			if (elementNumber < highestElement)// if the element number is less thn the highest element number, increments the element by 1
+			{
+				elementNumber = elementNumber + 1;
+			}
+			else if (elementNumber = highestElement)// if the element number is the highest element number starts again at element 0
+			{
+				elementNumber = 0;
+
+			}
+		}
+		if (inputsDone >= tableSize)// if the number of inputs doesn is greater then the table size, indicates a full table
+		{
+
+			cout << "The table is full" << endl;
+			return;
+		}
+		cout << " The String was added at element " << elementNumber << endl;
+		newArray[elementNumber] = inputString; // indicates a new string was added in the table and inputs that string into the correct elements
+	}
+	int find(string inputString, int tableSize)// searched the array for the correct string
+	
+	{
+
+		int fullTraversal = 0;// used to determin if the elements have been traversed once already
+		int hashedValue = stringHash(inputString, tableSize);// method call to hash the input string
+		int highestElement = tableSize-1;// assings the highest element number to it's variable
+		
+		while (newArray[hashedValue] != inputString)// loops through the array untill the input string is found
+		{
+			if (hashedValue < highestElement)//if the string isn't found in the current element and that element isn't the last element, the array element searched in incremeneted by 1
+			{
+
+				hashedValue = hashedValue + 1;
+
+			}
+			else
+			{
+				if (fullTraversal == 1 && hashedValue == highestElement)// the array has been searched through entirely, and the string is not found, that is inidciated
+				{
+					cout << " Value was not found" << endl;
+					return 0;
+
+				}
+				else
+				{
+					hashedValue = 0;// if the array element searched reaches the highest element but the array hasn't been searched entirely, the search begins at element 0 and a counter is started to elemiminate excess array searching
+					fullTraversal = 1;
+				}
+
+			}
+
+		}
+		if (inputString == newArray[hashedValue])// if the value is found, a console print command indicates it's discovey and where
+		{
+
+			cout << " String found at element " << hashedValue << endl;
+		}
+		return hashedValue;// the hashed value of the discovered value it returned for use in other methods
+
+	}
+	void deleteEntry(string inputString, int tableSize) //uses the search method to find, then delete and entry, the string "DeletedElement" replaces the deleted value
+	{
+		
+		int elementToDelete=0;
+		
+		elementToDelete=find(inputString, tableSize);// method call to find the missing element
+
+		newArray[elementToDelete] = "DeletedElement";// assings the string "Deleted Element" to the now empty array element
+
+		cout << inputString << " was deleted at element " << elementToDelete;// console prints the results of the deletion
+
+	}
+	void printTable()// prints all of the values in the arryay
+	{
+
+		for (int x = 0; x < arraySize;x++)// 
+		{
+
+			cout << " The value in element " << x << " is" << newArray[x] << endl;// cycles through the array and prints to console all of the values in it
+		}
+		system("pause");
+
+	}
+
+};
+
+
+
+int main()
+{
+
+
+	string inputString;
+
+	int tablesize = 0;//for the table size
+	int numberOfElements = 0;//vairable for the number of items in the table
+	int inputsDone = 0;//used to track the number of insertion and deletions in the array
+	int x = 0;// for the switch statement
+	
+
+
+	cout << " How many items will the hash table hold?" << endl;
+	cin >> numberOfElements;// assigns the number of elements to the variable
+
+	tablesize = (numberOfElements * 2);// the table should be twice the number of expected value placed in it
+
+	
+	HashTable myHash(tablesize);// instatiates the HashTable class
+	
+	system("pause");
+
+
+	while (x < 10)// switch statement
+	{
+
+		cout << "What would you like to do today?" << endl;// menu detailing the options for the user
+		cout << "type '1' to insert a new item into the hashtable" << endl;
+		cout << "type '2' to delete an item" << endl;
+		cout << "type '3' to display a list of all of the items in the table" << endl;
+		cout << "type '4' to find a specific item" << endl;
+		cin >> x;
+
+		switch (x)
+		{
+		case 1:
+			myHash.fillTable(inputsDone);// calls the method that inserts a new value in the hastable
+			inputsDone = inputsDone + 1;//increments the number of inputs done
+			break;
+		case 2:
+			cout << "What value would you like to delete?" << endl;// a console print that requests the string value the user wants to delete in the table
+			cin >> inputString;// assigns the users input value to the string
+			myHash.deleteEntry(inputString, tablesize);// calls the delete method
+			inputsDone = inputsDone - 1;// decerements this variable to track the number of inputs in the array
+			break;
+		case 3:
+			myHash.printTable();// method call to print all of the values in the array
+			break;
+		case 4:
+			cout << "What value would you like to look for?" << endl;// console print asking the user to unput the string they want to search through the table for
+			cin >> inputString;// assigs the input to the input string
+			myHash.find(inputString, tablesize);// method call to search through the array for the requested stgring
+			break;
+
+		}
+
+		system("pause");
+
+	}
+}
